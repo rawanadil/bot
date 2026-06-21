@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>بوابة المساعد الرقمي</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#004659",
+              "primary-container": "#155e75",
+              "on-background": "#171c1f",
+              "background": "#f6fafe",
+              "surface-container-low": "#f0f4f8",
+            },
+            fontFamily: {
+              "body": ["IBM Plex Sans Arabic", "sans-serif"],
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; scroll-behavior: smooth; overflow-x: hidden; }
+        .hover-lift { transition: all 0.3s ease; }
+        /* تحسين حاوية الأوربيت */
+.orbit-wrapper {
+    position: relative;
+    width: 600px; /* زيادة عرض الحاوية */
+    height: 600px; /* زيادة ارتفاع الحاوية */
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.orbit-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: rotateOrbit 80s linear infinite;
+}
+
+.group:hover .orbit-container {
+    animation-play-state: paused;
+}
+
+.orbit-item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* زيادة المسافة من المركز إلى 250px بدلاً من 200px لاستغلال المجال */
+    margin: -80px; /* نصف عرض الصورة الجديد لضبط السنتر */
+    transform: rotate(calc(var(--i) * (360deg / 5))) translate(250px) rotate(calc(var(--i) * (-360deg / 5)));
+    width: 160px; /* تكبير عرض العنصر */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+}
+
+@keyframes rotateOrbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* حركة عكسية للحفاظ على ثبات الصور (رأسية دائماً) */
+.orbit-item-content {
+    animation: rotateCounter 80s linear infinite;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.group:hover .orbit-item-content {
+    animation-play-state: paused;
+}
+
+@keyframes rotateCounter {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+}
+
+/* تكبير الصور وتحسين وضوحها */
+.orbit-item img {
+    width: 150px; /* تكبير قطر الصورة بشكل ملحوظ */
+    height: 150px;
+    border-radius: 50%;
+    border: 5px solid #004659;
+    object-fit: cover;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* ظل أقوى للوضوح */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.orbit-item:hover img {
+    border-color: #155e75;
+    transform: scale(1.15); /* تأثير تكبير إضافي عند التحويم */
+    box-shadow: 0 12px 30px rgba(21, 94, 117, 0.3);
+}
+
+.orbit-item span {
+    display: block;
+    margin-top: 15px;
+    font-size: 16px; /* تكبير الخط */
+    font-weight: 700;
+    color: #004659;
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 4px 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* النص المركزي الثابت */
+.center-text {
+    z-index: 20;
+    text-align: center;
+    pointer-events: none;
+    max-width: 250px;
+    background: white;
+    padding: 20px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 20px rgba(0,70,89,0.05);
+}
+/* حركة الدائرة */
+@keyframes rotateOrbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+        .hover-lift:hover { transform: translateY(-5px); }
+        .image-zoom { transition: transform 0.5s ease; }
+        .image-zoom:hover { transform: scale(1.05); }
+
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary/20 animate__animated animate__fadeIn">
+
+<header class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm flex flex-row-reverse justify-between items-center px-8 py-4">
+    <div class="flex items-center gap-4">
+        <div class="text-xl font-bold text-primary">المساعد الرقمي</div>
+    </div>
+    <nav class="flex flex-row-reverse gap-8">
+        <a class="text-primary font-bold border-b-2 border-primary" href="#">الرئيسية</a>
+        <a href="https://alzahraa.edu.iq/ar/page/vision_mission_objectives" class="text-slate-600 hover:text-primary transition-colors">عن الجامعة</a>
+        <a href="https://eng.alzahraa.edu.iq/ar" class="text-slate-600 hover:text-primary transition-colors">عن الكلية</a>
+    </nav>
+    <div class="w-20 md:block hidden"></div>
+</header>
+
+<main class="pt-24">
+    <section class="relative py-20 px-8 flex flex-col items-center text-center overflow-hidden">
+        <div class="absolute inset-0 bg-white -z-10"></div>
+        <div class="mb-10 flex justify-center items-center animate__animated animate__backInUp animate__slow">
+            <div class="relative">
+                <div class="absolute inset-0 bg-cyan-200/20 blur-3xl rounded-full scale-150 -z-10"></div>
+                <img  src="{{ url_for('static', filename='photo_2026-04-01_04-34-16.jpg') }}" alt="شعار الكلية" class="h-44 md:h-56 w-auto" style="mix-blend-mode: multiply; filter: contrast(1.2) brightness(1.05);">
+            </div>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-black text-primary mb-6 leading-tight max-w-4xl animate__animated animate__backInDown">
+            مستقبلك الأكاديمي يبدأ من <span class="text-primary-container">المساعد الرقمي</span>
+        </h1>
+        <p class="text-lg text-slate-600 max-w-2xl mb-10 leading-relaxed animate__animated animate__fadeIn animate__delay-1s">
+            منصة متكاملة تجمع بين عراقة التقاليد الأكاديمية وأحدث تقنيات التعليم الرقمي لضمان تجربة تعلم استثنائية.
+        </p>
+    </section>
+   <section class="py-24 px-8 text-center overflow-visible">
+    <h2 class="text-4xl font-black text-primary mb-16">أقسام الكلية</h2>
+
+    <div class="orbit-wrapper group">
+        <div class="center-text">
+            <p class="text-xl text-primary font-bold leading-tight">
+                أقسامنا الهندسية<br>
+                <span class="text-base text-slate-500 font-medium mt-2 block">اضغطي على صورة القسم للتفاصيل</span>
+            </p>
+        </div>
+
+        <div class="orbit-container">
+            <a href="http://127.0.0.1:5000/chat" class="orbit-item" style="--i:0;">
+                <div class="orbit-item-content">
+                    <img src="{{ url_for('static', filename='ai.jpeg') }}" alt="AI">
+                    <span>هندسة الذكاء الاصطناعي</span>
+                </div>
+            </a>
+
+            <a href="http://127.0.0.1:5000/chat" class="orbit-item" style="--i:1;">
+                <div class="orbit-item-content">
+                    <img src="{{ url_for('static', filename='au.jpeg') }}" alt="Architecture">
+                    <span>هندسة العمارة</span>
+                </div>
+            </a>
+
+            <a href="http://127.0.0.1:5000/chat" class="orbit-item" style="--i:2;">
+                <div class="orbit-item-content">
+                    <img src="{{ url_for('static', filename='cs.jpeg') }}" alt="Cyber">
+                    <span>هندسة الأمن السيبراني</span>
+                </div>
+            </a>
+
+            <a href="http://127.0.0.1:5000/chat" class="orbit-item" style="--i:3;">
+                <div class="orbit-item-content">
+                    <img src="{{ url_for('static', filename='di.jpeg') }}" alt="Digital">
+                    <span>هندسة التصميم الرقمي</span>
+                </div>
+            </a>
+
+            <a href="http://127.0.0.1:5000/chat" class="orbit-item" style="--i:4;">
+                <div class="orbit-item-content">
+                    <img src="{{ url_for('static', filename='ha.jpeg') }}" alt="Mobile">
+                    <span> هندسة الحوسبة المتنقلة</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+<section class="py-16 px-8 max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        
+        <div class="space-y-6" data-aos="fade-right" data-aos-delay="200">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="material-symbols-outlined text-primary text-3xl">help_center</span>
+                <h2 class="text-2xl font-bold text-primary">الأسئلة العامة</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-r-4 border-primary hover-lift">
+                <h3 class="font-bold mb-2">مادة الـ UX/UI شنو يعني؟</h3>
+                <p class="text-sm text-slate-600">تصميم واجهات التطبيقات (UI) وتجربة المستخدم (UX) لضمان سهولة استخدام التطبيق.</p>
+            </div>
+
+            <button  onclick="window.location.href='http://127.0.0.1:5000/pas'"
+
+		 class="flex items-center gap-2 text-primary font-bold hover:gap-4 transition-all group">
+                <span>انتقل لصفحة الأسئلة العامة</span>
+                <span class="material-symbols-outlined group-hover:translate-x-[-5px] transition-transform">arrow_back</span>
+            </button>
+        </div>
+
+        <div class="space-y-6" data-aos="fade-left" data-aos-delay="400">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="material-symbols-outlined text-primary text-3xl">school</span>
+                <h2 class="text-2xl font-bold text-primary">أسئلة الجامعة</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-r-4 border-primary/40 hover-lift">
+                <h3 class="font-bold mb-2">كلية الهندسة شنو بيها أقسام؟</h3>
+                <p class="text-sm text-slate-600">هندسة الذكاء الاصطناعي، الأمن السيبراني، التصميم الرقمي، وغيرها.</p>
+            </div>
+	   
+            <button onclick="window.location.href='http://127.0.0.1:5000/chat'"
+		class="flex items-center gap-2 text-primary-container font-bold hover:gap-4 transition-all group">
+                <span>انتقل لصفحة أسئلة الجامعة</span>
+                <span class="material-symbols-outlined group-hover:translate-x-[-5px] transition-transform">arrow_back</span>
+            </button>
+        </div>
+
+    </div>
+</section>
+
+    <section class="py-20 bg-surface-container-low px-8" data-aos="zoom-in-up">
+        <div class="max-w-5xl mx-auto bg-white rounded-[2rem] overflow-hidden shadow-xl flex flex-col md:flex-row items-stretch">
+            <div class="md:w-1/2 p-12 flex flex-col justify-center">
+                <h2 class="text-3xl font-black text-primary mb-6">الاختبار الذكي</h2>
+		<p class="text-slate-600 mb-8">استخدمي نظامنا الذكي لتحديد التخصص الأمثل لك في دقائق.</p>
+		<a href="http://localhost:8501">
+                <button class="w-full md:w-fit bg-primary text-white px-10 py-4 rounded-xl font-bold hover:bg-primary-container active:scale-95 transition-all">
+                    ابدأ الاختبار الآن
+                </button>
+                </div>
+        </a>
+            <div class="md:w-1/2 overflow-hidden">
+                <img alt="office" class="w-full h-full object-cover image-zoom" src="{{ url_for('static', filename='Gemini_Generated_Image_2ix6oh2ix6oh2ix6.png') }}"/>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="w-full bg-slate-900 text-slate-300 px-12 py-12">
+    <div class="space-y-4">
+        <h4 class="text-white font-bold border-b border-slate-700 pb-2">روابط الجامعة الرسمية</h4>
+        <ul class="space-y-2 text-sm">
+            <li><a href="https://alzahraa.edu.iq/ar" class="hover:text-cyan-400 transition-colors">موقع الجامعة الرئيسي</a></li>
+            <li><a href="https://www.facebook.com/p/%D9%83%D9%84%D9%8A%D8%A9-%D8%A7%D9%84%D9%87%D9%86%D8%AF%D8%B3%D8%A9-%D9%88-%D8%AA%D9%83%D9%86%D9%88%D9%84%D9%88%D8%AC%D9%8A%D8%A7-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%AC%D8%A7%D9%85%D8%B9%D8%A9-%D8%A7%D9%84%D8%B2%D9%87%D8%B1%D8%A7%D8%A1-%D8%B9-%D9%84%D9%84%D8%A8%D9%86%D8%A7%D8%AA-61561659693502/" class="hover:text-cyan-400 transition-colors">فيسبوك</a></li>
+
+	       <li><a href="https://www.instagram.com/college.of.engineering_and_it?igsh=aGEyN2FwczAyZHM3" class="hover:text-cyan-400 transition-colors">انستغرام</a></li>
+        </ul>
+    </div>
+</footer>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,
+    once: false, // التغيير هنا لكي تتكرر الحركة
+    mirror: true 
+  });
+</script>
+
+</body>
+</html>

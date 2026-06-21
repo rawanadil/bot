@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>الأسئلة العامة - المساعد الذكي</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500;600" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#0d9488', // Teal-600 لون تركوازي غامق هادئ
+                        'primary-container': '#0f766e',
+                        'brand-accent': '#ccfbf1',
+                        'background': '#f0f9f9',
+                        'surface-low': '#f1f5f9',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: #f0f9f9; }
+        .chat-container { height: calc(100vh - 140px); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .glass-panel { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); }
+        .msg-anim { animation: fadeUp 0.4s ease-out forwards; }
+        .sidebar-btn { transition: all 0.3s ease; }
+        .sidebar-btn:hover { background-color: #0d9488; color: white !important; transform: translateX(-5px); }
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 1024px) { .sidebar { display: none; } }
+    </style>
+</head>
+<body class="overflow-hidden flex flex-col h-screen text-[#171c1f]">
+
+    <header class="h-16 flex items-center justify-between px-8 bg-white border-b border-teal-100 shadow-sm shrink-0 z-30">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg transition-transform hover:scale-105">
+                <span class="material-symbols-outlined text-white">menu_book</span>
+            </div>
+            <span class="font-bold text-xl text-primary tracking-tight">دليل الأسئلة العامة</span>
+        </div>
+        <div class="flex items-center gap-2 px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-xs font-medium border border-teal-100">
+            <span class="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></span>
+            موسوعة الطالبة
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        
+        <aside class="sidebar w-80 bg-white border-l border-slate-100 flex flex-col shrink-0 z-20 shadow-xl">
+            <div class="p-5 border-b border-slate-50">
+                <h3 class="text-primary font-bold flex items-center gap-2 text-sm">
+                    <span class="material-symbols-outlined text-lg">library_books</span>
+                    مواضيع تعليمية
+                </h3>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1 hide-scrollbar">
+                <script>
+                    const questions = [
+                        "شنو هي مادة تعلم الآلة (Machine Learning)؟",
+                        "شلون أكدر أتعرف على قسم التصميم الرقمي؟",
+                        "شنو الفرق بين الـ UI والـ UX؟",
+                        "ما هي لغات البرمجة اللي ندرسها بالسنة الأولى؟",
+                        "أريد نصائح لتنظيم الوقت في الهندسة",
+                        "شنو يعني الأمن السيبراني وليه هو مهم؟"
+                    ];
+                    
+                    document.write(questions.map(q => `
+                        <button onclick="fillInput('${q}')" class="sidebar-btn flex items-center gap-3 w-full text-right p-3 rounded-xl text-slate-600 hover:text-white group">
+                            <span class="material-symbols-outlined text-[18px] opacity-50 group-hover:opacity-100">lightbulb</span>
+                            <span class="text-xs font-medium truncate">${q}</span>
+                        </button>
+                    `).join(''));
+                </script>
+            </div>
+
+            <div class="p-5 bg-teal-50/30 border-t border-teal-100 space-y-3">
+                
+                <a href="ee.html" class="flex items-center justify-center gap-2 w-full py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-bold transition-all shadow-sm hover:bg-slate-50 active:scale-95">
+                    <span class="material-symbols-outlined text-lg">home</span>
+                    العودة للرئيسية
+                </a>
+
+                <a href="http://127.0.0.1:5000/chat" class="flex items-center justify-center gap-2 w-full py-3 bg-primary text-white rounded-xl text-sm font-bold transition-all shadow-md hover:bg-primary-container active:scale-95">
+                    <span class="material-symbols-outlined text-lg">school</span>
+                    أسئلة الجامعة (المعدلات والأقساط)
+                </a>
+
+                <div class="bg-teal-600/5 p-3 rounded-xl border border-teal-200/50">
+                    <p class="text-[11px] text-teal-900/80 leading-relaxed text-center font-medium">
+                        <b>توضيح:</b> للتعرف على المعدلات والأقساط؛ يرجى الانتقال لصفحة <b>أسئلة الجامعة</b>.
+                    </p>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col relative">
+            <main id="chatArea" class="chat-container overflow-y-auto px-6 py-8 space-y-8 max-w-4xl mx-auto w-full hide-scrollbar flex-1">
+                <div class="flex justify-start gap-4 msg-anim">
+                    <div class="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-lg self-end">
+                        <span class="material-symbols-outlined text-sm">menu_book</span>
+                    </div>
+                    <div class="bg-white p-5 rounded-[2rem] rounded-bl-none shadow-sm border border-teal-50 max-w-[80%]">
+                        <p class="text-sm md:text-base leading-relaxed text-slate-800">
+                            أهلاً بكِ في الدليل المعرفي! 📚 هنا نناقش المواد الدراسية، المفاهيم الهندسية، وكيفية تطوير مهاراتك. 
+                        </p>
+                    </div>
+                </div>
+            </main>
+
+            <section class="w-full glass-panel pb-8 pt-4 px-6 shrink-0">
+                <div class="max-w-3xl mx-auto relative">
+                    <div class="flex items-center gap-3 bg-white border border-teal-100 rounded-[1.5rem] px-5 py-2 shadow-xl focus-within:ring-4 ring-teal-500/5 focus-within:border-primary transition-all duration-300">
+                        <input id="chatInput" class="flex-1 bg-transparent border-none focus:ring-0 text-slate-700 py-4 text-sm" placeholder="اسألي عن المواد أو التخصصات..." type="text"/>
+                        <button onclick="sendMessage()" class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center hover:bg-primary-container hover:scale-105 active:scale-95 transition-all shadow-lg">
+                            <span class="material-symbols-outlined">send</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const chatInput = document.getElementById('chatInput');
+        const chatArea = document.getElementById('chatArea');
+
+        function fillInput(text) {
+            chatInput.value = text;
+            chatInput.focus();
+        }
+
+        async function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    // 1. عرض رسالة الطالبة
+    const userMsg = `
+        <div class="flex justify-end gap-4 msg-anim">
+            <div class="bg-teal-600 text-white p-5 rounded-[2rem] rounded-br-none shadow-lg max-w-[80%]">
+                <p class="text-sm md:text-base font-medium">${text}</p>
+            </div>
+            <div class="w-10 h-10 rounded-2xl bg-teal-100 flex items-center justify-center flex-shrink-0 shadow-md self-end">
+                <span class="material-symbols-outlined text-sm text-teal-700">person</span>
+            </div>
+        </div>`;
+    chatArea.insertAdjacentHTML('beforeend', userMsg);
+    chatInput.value = '';
+    chatArea.scrollTop = chatArea.scrollHeight;
+
+    // 2. عرض "جاري التفكير..."
+    const tempId = "loading-" + Date.now();
+    const botLoading = `
+        <div id="${tempId}" class="flex justify-start gap-4 msg-anim">
+            <div class="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-lg self-end">
+                <span class="material-symbols-outlined text-sm">auto_awesome</span>
+            </div>
+            <div class="bg-white p-5 rounded-[2rem] rounded-bl-none shadow-sm border border-teal-50 max-w-[80%]">
+                <p class="text-sm text-slate-500 italic">لحظة عيوني، كاعد أفكرلج...</p>
+            </div>
+        </div>`;
+    chatArea.insertAdjacentHTML('beforeend', botLoading);
+    chatArea.scrollTop = chatArea.scrollHeight;
+
+    // 3. الربط الفعلي مع البايثون (Fetch API)
+    try {
+        const response = await fetch('/ask_pas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text })
+        });
+        const data = await response.json();
+        
+        // إزالة رسالة التحميل وعرض جواب البوت الحقيقي
+        document.getElementById(tempId).remove();
+        
+        const botReply = `
+            <div class="flex justify-start gap-4 msg-anim">
+                <div class="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-lg self-end">
+                    <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                </div>
+                <div class="bg-white p-5 rounded-[2rem] rounded-bl-none shadow-sm border border-teal-50 max-w-[80%]">
+                    <p class="text-sm text-slate-800 leading-relaxed">${data.reply}</p>
+                </div>
+            </div>`;
+        chatArea.insertAdjacentHTML('beforeend', botReply);
+    } catch (error) {
+        document.getElementById(tempId).innerHTML = "نعتذر، حدث خطأ في الاتصال.";
+    }
+    chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+    </script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>مهندسة المستقبل - المساعد الذكي</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500;600" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#004659',
+                        'primary-container': '#155e75',
+                        'brand-accent': '#adebeb',
+                        'background': '#f6fafe',
+                        'surface-low': '#f0f4f8',
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.4s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(15px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: #f6fafe; }
+        .chat-container { height: calc(100vh - 140px); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); }
+        .msg-anim { animation: fadeUp 0.4s ease-out forwards; }
+        .sidebar-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-btn:hover { background-color: #004659; color: white !important; transform: translateX(-5px); }
+        @media (max-width: 1024px) { .sidebar { display: none; } }
+    </style>
+</head>
+<body class="overflow-hidden flex flex-col h-screen text-[#171c1f]">
+
+    <header class="h-16 flex items-center justify-between px-8 bg-white border-b border-slate-200 shadow-sm shrink-0 z-30">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg transition-transform hover:rotate-12">
+                <span class="material-symbols-outlined text-white">smart_toy</span>
+            </div>
+            <span class="font-bold text-xl text-primary tracking-tight">المساعد الرقمي</span>
+        </div>
+        <div class="flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium border border-green-100">
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            الأنظمة متصلة
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        
+        <aside class="sidebar w-80 bg-white border-l border-slate-100 flex flex-col shrink-0 z-20 shadow-xl">
+            <div class="p-5 border-b border-slate-50">
+                <h3 class="text-primary font-bold flex items-center gap-2 text-sm">
+                    <span class="material-symbols-outlined text-lg">exploring</span>
+                    أسئلة تهمكِ يامهندسة
+                </h3>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1 hide-scrollbar">
+                <script>
+                    const questions = [
+                        "ما هي أقسام كلية الهندسة؟",
+                        "ما هو معدل القبول لهندسة الذكاء الاصطناعي؟",
+                        "شنو يعني تخصص هندسة التصميم الرقمي؟",
+                        "شنو الفرق بين الأمن والتصميم؟",
+                        "شكد القسط إذا معدلي 90 في العمارة؟",
+                        "شكد قسط ومعدل الحوسبة ؟",
+                        "شنو هي المختبرات المتوفرة بالكلية؟",
+                        "شنو اللوان الزي المسموح بيها ؟",
+                        "شنو المواد الرئيسية في الذكاء الاصطناعي؟",
+                        "ما هو الفرق بين الحوسبة المتنقلة والذكاء؟",
+                        "شنو يميز التصميم الرقمي؟؟"
+                    ];
+                    
+                    document.write(questions.map(q => `
+                        <button onclick="fillInput('${q}')" class="sidebar-btn flex items-center gap-3 w-full text-right p-3 rounded-xl text-slate-600 hover:text-white group">
+                            <span class="material-symbols-outlined text-[18px] opacity-50 group-hover:opacity-100">contact_support</span>
+                            <span class="text-xs font-medium truncate">${q}</span>
+                        </button>
+                    `).join(''));
+                </script>
+            </div>
+
+	<div class="p-5 bg-surface-low/50 border-t border-slate-100 space-y-3">
+        
+    <a href="ee.html" class="flex items-center justify-center gap-2 w-full py-3 bg-white border border-slate-200 text-primary rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95 hover:bg-slate-100 hover:text-primary-container hover:border-primary/20">
+        <span class="material-symbols-outlined text-lg">home</span>
+        العودة للرئيسية
+    </a>
+
+    <button onclick="window.location.href='http://127.0.0.1:5000/pas'"
+ class="flex items-center justify-center gap-2 w-full py-3 bg-primary text-white rounded-xl text-sm font-bold transition-all shadow-md active:scale-95 hover:bg-primary-container hover:shadow-lg">
+        <span class="material-symbols-outlined text-lg">quiz</span>
+        الأسئلة العامة
+    </button>
+
+    <div class="bg-primary/5 p-3 rounded-xl border border-primary/10 transition-colors hover:bg-primary/10">
+        <p class="text-[11px] text-primary/80 leading-relaxed text-center font-medium">
+            <b>توضيح:</b> الأسئلة العامة تشمل كل ما يخص الأنظمة الدراسية، المساعدة في الدراسة و التعرف على المواد .
+        </p>
+    </div>
+</div>
+        </aside>
+
+        <div class="flex-1 flex flex-col relative bg-[#f6fafe]">
+            <main id="chatArea" class="chat-container overflow-y-auto px-6 py-8 space-y-8 max-w-4xl mx-auto w-full hide-scrollbar flex-1">
+                <div class="flex justify-start gap-4 msg-anim">
+                    <div class="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-lg self-end">
+                        <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                    </div>
+                    <div class="bg-white p-5 rounded-[2rem] rounded-bl-none shadow-sm border border-slate-100 max-w-[80%]">
+                        <p class="text-sm md:text-base leading-relaxed text-slate-800">
+                            هلا بيج يامهندسة المستقبل! ✨ مشوارج الأكاديمي يبدأ من هنا. اسأليني عن الأقسام، التسجيل، أو أي شيء يخص الكلية وراح أجاوبج فوراً.
+                        </p>
+                    </div>
+                </div>
+            </main>
+
+            <section class="w-full glass-panel pb-8 pt-4 px-6 shrink-0">
+                <div class="max-w-3xl mx-auto relative">
+                    <div class="flex items-center gap-3 bg-white border border-slate-200 rounded-[1.5rem] px-5 py-2 shadow-xl focus-within:ring-4 ring-primary/5 focus-within:border-primary transition-all duration-300">
+                        <input id="chatInput" 
+                               class="flex-1 bg-transparent border-none focus:ring-0 text-slate-700 py-4 text-sm" 
+                               placeholder="اكتبي سؤالج هنا..." 
+                               type="text"/>
+                        <button onclick="sendMessage()" 
+                                class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center hover:bg-primary-container hover:scale-105 active:scale-95 transition-all shadow-lg">
+                            <span class="material-symbols-outlined">send</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const chatInput = document.getElementById('chatInput');
+        const chatArea = document.getElementById('chatArea');
+
+        function fillInput(text) {
+            chatInput.value = text;
+            chatInput.focus();
+        }
+
+        async function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    // عرض رسالة المستخدم
+    const userMsg = `
+        <div class="flex justify-end gap-4 msg-anim">
+            <div class="bg-primary text-white p-5 rounded-[2rem] rounded-br-none shadow-lg max-w-[80%]">
+                <p class="text-sm md:text-base font-medium">${text}</p>
+            </div>
+            <div class="w-10 h-10 rounded-2xl bg-brand-accent flex items-center justify-center flex-shrink-0 shadow-md self-end">
+                <span class="material-symbols-outlined text-sm text-primary">person</span>
+            </div>
+        </div>
+    `;
+
+    chatArea.insertAdjacentHTML('beforeend', userMsg);
+    chatInput.value = '';
+    chatArea.scrollTop = chatArea.scrollHeight;
+
+    // loading bot
+    const loadingMsg = `
+        <div id="loading" class="flex justify-start gap-4 msg-anim">
+            <div class="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-lg self-end">
+                <span class="material-symbols-outlined text-sm">auto_awesome</span>
+            </div>
+            <div class="bg-white p-5 rounded-[2rem] rounded-bl-none shadow-sm border border-slate-100">
+                <p class="text-sm text-slate-500 italic">جاري التحليل...</p>
+            </div>
+        </div>
+    `;
+    chatArea.insertAdjacentHTML('beforeend', loadingMsg);
+
+    // إرسال للباكند
+    try {
+        const res = await fetch("/ask_chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: text
+            })
+        });
+
+        const data = await res.json();
+
+        document.getElementById("loading").remove();
+
+        const botReply = `
+            <div class="flex justify-start gap-4 msg-anim">
+                <div class="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-lg self-end">
+                    <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                </div>
+                <div class="bg-white p-5 rounded-[2rem] rounded-bl-none shadow-sm border border-slate-100 max-w-[80%]">
+                    <p class="text-sm text-slate-800">${data.reply.replace(/person|auto_awesome/g,'')}</p>
+                </div>
+            </div>
+        `;
+
+        chatArea.insertAdjacentHTML('beforeend', botReply);
+        chatArea.scrollTop = chatArea.scrollHeight;
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
