@@ -173,7 +173,7 @@ if "مبروك" in state["last_reply"]:
     st.balloons()
     # رابط صفحة الـ HTML الرئيسية
     st.markdown("""
-        <a href="http://127.0.0.1:5000/ee.html" target="_self" style="text-decoration:none;">
+        <a href="http://127.0.0.1:8000/ee.html" target="_self" style="text-decoration:none;">
             <div style="text-align:center; padding:10px; background-color:#155e75; color:white; border-radius:10px; margin-top:10px;">
                 العودة للصفحة الرئيسية 🏠
             </div>

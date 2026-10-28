@@ -1,13 +1,5 @@
-from flask import Flask, render_template, request, jsonify,redirect
 from google import genai  # استدعاء المكتبة الجديدة
 import os
-from boot2 import chatbot_response, client
-base_dir = os.path.dirname(os.path.abspath(__file__))
-
-# تحديد مجلد الـ templates (نطي اسم المجلد فقط، مو اسم ملف الـ html)
-path_to_templates = os.path.join(base_dir, 'template')
-
-app = Flask(__name__, template_folder=path_to_templates)
 
 # --- 1. إعدادات المكتبة الجديدة ---
 client = genai.Client(api_key="AIzaSyCOcg4iZZf3NK0qdITxbOMYBRwYdQt1m6k")
@@ -58,43 +50,3 @@ SYSTEM_PROMPT = """
 - الهدف:
 تخلي الطالبة تفهم بسرعة، تحب التخصص، وتحس إن الموضوع سهل مو مخيف.
 """
-
-# ================== CHAT ==================
-state={}
-@app.route('/chat')
-def chat_page():
-    return render_template('chat.html')
-@app.route('/ask_chat', methods=['POST'])
-def ask_chat():
-    data = request.get_json()
-    user_message = data.get("message")
-
-    reply = chatbot_response(user_message, state)
-    return jsonify({"reply": reply})
-
-@app.route('/ee.html')
-def ee_page():
-    return render_template('ee.html')
-
-# ================== PAS ==================
-@app.route('/pas')
-def home():
-    return render_template('general_faq2.html')
-
-@app.route('/ask_pas', methods=['POST']) # مسار مختلف تماماً
-def ask_pas(): # اسم دالة مختلف
-    data = request.get_json()
-    user_message = data.get("message")
-    try:
-        response = client.models.generate_content(
-            model=MODEL_ID,
-            contents=f"{SYSTEM_PROMPT}\n\nسؤال الطالبة: {user_message}"
-        )
-        return jsonify({"reply": response.text})
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({"reply": "حبيبتي صارت مشكلة صغيرة بالاتصال، حاولي مرة ثانية."})
-
-#
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
@@ -161,7 +162,7 @@
         <div class="mb-10 flex justify-center items-center animate__animated animate__backInUp animate__slow">
             <div class="relative">
                 <div class="absolute inset-0 bg-cyan-200/20 blur-3xl rounded-full scale-150 -z-10"></div>
-                <img  src="{{ url_for('static', filename='photo_2026-04-01_04-34-16.jpg') }}" alt="شعار الكلية" class="h-44 md:h-56 w-auto" style="mix-blend-mode: multiply; filter: contrast(1.2) brightness(1.05);">
+                <img  src="{% static 'photo_2026-04-01_04-34-16.jpg' %}" alt="شعار الكلية" class="h-44 md:h-56 w-auto" style="mix-blend-mode: multiply; filter: contrast(1.2) brightness(1.05);">
             </div>
         </div>
         <h1 class="text-4xl md:text-6xl font-black text-primary mb-6 leading-tight max-w-4xl animate__animated animate__backInDown">
@@ -183,37 +184,37 @@
         </div>
 
         <div class="orbit-container">
-            <a href="http://127.0.0.1:5000/chat" class="orbit-item" style="--i:0;">
+            <a href="/chat" class="orbit-item" style="--i:0;">
                 <div class="orbit-item-content">
-                    <img src="{{ url_for('static', filename='ai.jpeg') }}" alt="AI">
+                    <img src="{% static 'ai.jpeg' %}" alt="AI">
                     <span>هندسة الذكاء الاصطناعي</span>
                 </div>
             </a>
 
-            <a href="http://127.0.0.1:5000/chat" class="orbit-item" style="--i:1;">
+            <a href="/chat" class="orbit-item" style="--i:1;">
                 <div class="orbit-item-content">
-                    <img src="{{ url_for('static', filename='au.jpeg') }}" alt="Architecture">
+                    <img src="{% static 'au.jpeg' %}" alt="Architecture">
                     <span>هندسة العمارة</span>
                 </div>
             </a>
 
-            <a href="http://127.0.0.1:5000/chat" class="orbit-item" style="--i:2;">
+            <a href="/chat" class="orbit-item" style="--i:2;">
                 <div class="orbit-item-content">
-                    <img src="{{ url_for('static', filename='cs.jpeg') }}" alt="Cyber">
+                    <img src="{% static 'cs.jpeg' %}" alt="Cyber">
                     <span>هندسة الأمن السيبراني</span>
                 </div>
             </a>
 
-            <a href="http://127.0.0.1:5000/chat" class="orbit-item" style="--i:3;">
+            <a href="/chat" class="orbit-item" style="--i:3;">
                 <div class="orbit-item-content">
-                    <img src="{{ url_for('static', filename='di.jpeg') }}" alt="Digital">
+                    <img src="{% static 'di.jpeg' %}" alt="Digital">
                     <span>هندسة التصميم الرقمي</span>
                 </div>
             </a>
 
-            <a href="http://127.0.0.1:5000/chat" class="orbit-item" style="--i:4;">
+            <a href="/chat" class="orbit-item" style="--i:4;">
                 <div class="orbit-item-content">
-                    <img src="{{ url_for('static', filename='ha.jpeg') }}" alt="Mobile">
+                    <img src="{% static 'ha.jpeg' %}" alt="Mobile">
                     <span> هندسة الحوسبة المتنقلة</span>
                 </div>
             </a>
@@ -234,7 +235,7 @@
                 <p class="text-sm text-slate-600">تصميم واجهات التطبيقات (UI) وتجربة المستخدم (UX) لضمان سهولة استخدام التطبيق.</p>
             </div>
 
-            <button  onclick="window.location.href='http://127.0.0.1:5000/pas'"
+            <button  onclick="window.location.href='/pas'"
 
 		 class="flex items-center gap-2 text-primary font-bold hover:gap-4 transition-all group">
                 <span>انتقل لصفحة الأسئلة العامة</span>
@@ -253,7 +254,7 @@
                 <p class="text-sm text-slate-600">هندسة الذكاء الاصطناعي، الأمن السيبراني، التصميم الرقمي، وغيرها.</p>
             </div>
 	   
-            <button onclick="window.location.href='http://127.0.0.1:5000/chat'"
+            <button onclick="window.location.href='/chat'"
 		class="flex items-center gap-2 text-primary-container font-bold hover:gap-4 transition-all group">
                 <span>انتقل لصفحة أسئلة الجامعة</span>
                 <span class="material-symbols-outlined group-hover:translate-x-[-5px] transition-transform">arrow_back</span>
@@ -275,7 +276,7 @@
                 </div>
         </a>
             <div class="md:w-1/2 overflow-hidden">
-                <img alt="office" class="w-full h-full object-cover image-zoom" src="{{ url_for('static', filename='Gemini_Generated_Image_2ix6oh2ix6oh2ix6.png') }}"/>
+                <img alt="office" class="w-full h-full object-cover image-zoom" src="{% static 'Gemini_Generated_Image_2ix6oh2ix6oh2ix6.png' %}"/>
             </div>
         </div>
     </section>
