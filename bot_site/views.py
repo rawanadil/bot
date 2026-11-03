@@ -6,8 +6,9 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from boot2 import chatbot_response
-from future_engineer_bot import MODEL_ID, SYSTEM_PROMPT, client
+# ملاحظة: استيراد الشات بوت صار داخل الدوال (lazy import)
+# لأن boot2 يحمّل موديلات ذكاء اصطناعي كبيرة، وما نريدها تتحمل
+# كل ما نشغل أوامر الداتابيس مثل migrate
 
 # ================== CHAT ==================
 state = {}
@@ -22,6 +23,8 @@ def chat_page(request):
 def ask_chat(request):
     data = json.loads(request.body)
     user_message = data.get("message")
+
+    from boot2 import chatbot_response
 
     reply = chatbot_response(user_message, state)
     return JsonResponse({"reply": reply})
@@ -41,6 +44,8 @@ def home(request):
 def ask_pas(request):
     data = json.loads(request.body)
     user_message = data.get("message")
+    from future_engineer_bot import MODEL_ID, SYSTEM_PROMPT, client
+
     try:
         response = client.models.generate_content(
             model=MODEL_ID,
