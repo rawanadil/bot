@@ -1,0 +1,13 @@
+{% extends "university/base.html" %}
+{% block title %}رفع ملخص{% endblock %}
+{% block content %}
+<section class="panel" style="max-width:620px;width:100%">
+  <h1>رفع ملخص لمادة {{ offering.subject.name }}</h1>
+  <p class="muted">ارفعي ملف (PDF أو صور الملخص الورقي) أو حطي رابط (مثلاً فيديو YouTube). الملخص يظهر للطلاب بعد موافقة الأستاذ.</p>
+  <form method="post" enctype="multipart/form-data" class="stack">
+    {% csrf_token %}
+    {% include "university/_form.html" %}
+    <div class="row"><button class="btn accent">رفع</button><a class="btn ghost" href="{% url 'subject_detail' offering.id %}?tab=summaries">إلغاء</a></div>
+  </form>
+</section>
+{% endblock %}

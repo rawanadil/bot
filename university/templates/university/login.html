@@ -1,0 +1,14 @@
+{% extends "university/base.html" %}
+{% block title %}تسجيل الدخول{% endblock %}
+{% block content %}
+<section class="panel" style="max-width:440px;width:100%;justify-self:center">
+  <h1>تسجيل الدخول</h1>
+  <p class="muted">ادخلي بإيميلك الجامعي.</p>
+  <form method="post" class="stack">
+    {% csrf_token %}
+    {% include "university/_form.html" %}
+    <button class="btn">دخول</button>
+  </form>
+  <p class="small muted">ما عندك حساب؟ <a href="{% url 'register' %}">سوي حساب</a></p>
+</section>
+{% endblock %}

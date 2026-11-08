@@ -264,3 +264,9 @@ ALTER TABLE "university_coursematerial" ADD CONSTRAINT "university_coursemat_upl
 CREATE INDEX "university_coursematerial_offering_id_12088441" ON "university_coursematerial" ("offering_id");
 CREATE INDEX "university_coursematerial_uploaded_by_id_cc515bc4" ON "university_coursematerial" ("uploaded_by_id");
 COMMIT;
+BEGIN;
+--
+-- Alter field image on projectimage
+--
+-- (no-op)
+COMMIT;

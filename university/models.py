@@ -587,7 +587,7 @@ class ProjectImage(models.Model):
     """صور الشكل الخارجي للمشروع."""
 
     project = models.ForeignKey(GraduationProject, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="projects/images/")
+    image = models.ImageField("الصورة", upload_to="projects/images/")
     caption = models.CharField("وصف الصورة", max_length=200, blank=True)
 
     class Meta:

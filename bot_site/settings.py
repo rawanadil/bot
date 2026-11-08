@@ -41,6 +41,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "university.context_processors.unread_notifications",
             ],
         },
     },
@@ -68,6 +69,29 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # الملفات المرفوعة (صور، PDF، Excel) تنحفظ هنا، والداتابيس تخزن المسار بس
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# ================== تسجيل الدخول ==================
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "after_login"
+LOGOUT_REDIRECT_URL = "home"
+
+# الإيميل الجامعي: إذا انكتب الدومين، التسجيل يقبل بس هذا الدومين (مثلاً uotechnology.edu.iq)
+UNIVERSITY_EMAIL_DOMAIN = os.environ.get("UNIVERSITY_EMAIL_DOMAIN", "")
+
+# إرسال الإيميل: بالتطوير الرسائل تنطبع بالـ terminal. للإرسال الحقيقي حطي إعدادات SMTP
+if os.environ.get("EMAIL_HOST"):
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.environ["EMAIL_HOST"]
+    EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+    EMAIL_USE_TLS = True
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "no-reply@university.local")
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 
 LANGUAGE_CODE = "ar"
 TIME_ZONE = "Asia/Baghdad"

@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 from . import views
 
@@ -11,6 +11,7 @@ urlpatterns = [
     path("ask_chat", views.ask_chat),
     path("ee.html", views.ee_page),
     path("pas", views.home),
+    path("", include("university.urls")),  # صفحات الطلاب والأساتذة
     path("ask_pas", views.ask_pas),
 ]
 

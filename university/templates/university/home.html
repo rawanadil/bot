@@ -1,0 +1,36 @@
+{% extends "university/base.html" %}
+{% block title %}قبل التسجيل{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>محتارة شنو تختارين بكلية الهندسة؟</h1>
+  <p>اسألي المساعدة الذكية عن الأقسام، المعدلات، الأقساط، ونوع الدراسة. وإذا خلصتي التسجيل وصار عندك إيميل جامعي، سوي حسابك هنا حتى تشوفين موادك ودرجاتك وحضورك.</p>
+  <div class="row">
+    <a class="btn accent" href="/chat">اسألي المساعدة الذكية</a>
+    <a class="btn ghost" href="/pas">مساعدة مهندسة المستقبل</a>
+    {% if not user.is_authenticated %}<a class="btn ghost" href="{% url 'register' %}">عندي إيميل جامعي، أريد أسوي حساب</a>{% endif %}
+  </div>
+</section>
+
+<div class="grid-2">
+  <section class="panel">
+    <div class="row spread">
+      <h2>أسئلة شائعة</h2>
+      <form method="get" class="row" role="search">
+        <input type="search" id="q" name="q" value="{{ q }}" placeholder="ابحثي بسؤال..." style="width:200px">
+        <button class="btn sm ghost">بحث</button>
+      </form>
+    </div>
+    {% for faq in faqs %}
+      <details class="faq"><summary>{{ faq.question }}</summary><p>{{ faq.answer }}</p></details>
+    {% empty %}
+      <p class="empty">ماكو نتائج{% if q %} لـ "{{ q }}"{% endif %}. جربي تسألين المساعدة الذكية.</p>
+    {% endfor %}
+  </section>
+  <aside class="panel">
+    <h2>الأقسام</h2>
+    <div class="list">
+      {% for d in departments %}<div class="item">{{ d.name }}</div>{% empty %}<p class="muted">ماكو أقسام بعد.</p>{% endfor %}
+    </div>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,2 @@
+{# عرض متوسط النجوم: avg و count #}
+{% if count %}<span class="stars-static" title="{{ avg|floatformat:"1u" }} من 5">{% for i in "12345" %}{% if forloop.counter <= avg|floatformat:0|add:0 %}★{% else %}☆{% endif %}{% endfor %}</span> <span class="small muted">{{ avg|floatformat:"1u" }} ({{ count }})</span>{% else %}<span class="small muted">ماكو تقييم بعد</span>{% endif %}

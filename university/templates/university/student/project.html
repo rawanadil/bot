@@ -1,0 +1,64 @@
+{% extends "university/base.html" %}
+{% block title %}مشروع التخرج{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{% if project %}{{ project.title }}{% else %}مشروع التخرج{% endif %}</h1>
+    {% if project %}<p class="muted">{{ project.academic_year }} · المشرف: {{ project.supervisor|default:"ما محدد" }} · <span class="pill {{ project.status }}">{{ project.get_status_display }}</span></p>
+    {% else %}<p class="muted">املي تفاصيل مشروعك واحفظيه، بعدين تكدرين تضيفين أعضاء الفريق والهاردوير والصور.</p>{% endif %}
+  </div>
+  {% if project and project.status == "draft" %}
+    <form method="post" action="{% url 'project_submit' %}">{% csrf_token %}<button class="btn accent">إرسال للمشرف</button></form>
+  {% endif %}
+</div>
+
+<div class="grid-2">
+  <section class="panel">
+    <h2>تفاصيل المشروع</h2>
+    <form method="post" class="stack">
+      {% csrf_token %}
+      {% include "university/_form.html" %}
+      {% if not project or project.status != "approved" %}<button class="btn">حفظ</button>{% endif %}
+    </form>
+  </section>
+
+  {% if project %}
+  <aside class="stack">
+    <section class="panel">
+      <h3>أعضاء الفريق</h3>
+      <div class="list">{% for mem in project.members.all %}
+        <div class="item row spread">
+          <span>{{ mem.student.user.full_name }} <span class="small muted">{{ mem.student.student_number }}</span>{% if mem.is_leader %} <span class="pill star">القائد</span>{% endif %}</span>
+          {% if not mem.is_leader %}<form method="post" action="{% url 'project_remove' 'member' mem.id %}">{% csrf_token %}<button class="btn sm danger">حذف</button></form>{% endif %}
+        </div>{% endfor %}</div>
+      <form method="post" action="{% url 'project_add' 'member' %}" class="row">{% csrf_token %}
+        <input name="student_number" placeholder="رقم الطالب" required style="flex:1;width:auto"><button class="btn sm">إضافة</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h3>الهاردوير</h3>
+      <div class="list">{% for h in project.hardware_items.all %}
+        <div class="item row spread">
+          <span>{{ h.name }} × {{ h.quantity }}{% if h.notes %} <span class="small muted">{{ h.notes }}</span>{% endif %}</span>
+          <form method="post" action="{% url 'project_remove' 'hardware' h.id %}">{% csrf_token %}<button class="btn sm danger">حذف</button></form>
+        </div>{% empty %}<p class="muted small">ماكو قطع بعد.</p>{% endfor %}</div>
+      <form method="post" action="{% url 'project_add' 'hardware' %}" class="stack">{% csrf_token %}
+        {% include "university/_form.html" with form=hardware_form %}<button class="btn sm">إضافة قطعة</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h3>صور الشكل الخارجي</h3>
+      <div class="thumbs">{% for img in project.images.all %}
+        <figure><img src="{{ img.image.url }}" alt="{{ img.caption }}"><figcaption class="small row spread">{{ img.caption }}
+          <form method="post" action="{% url 'project_remove' 'image' img.id %}">{% csrf_token %}<button class="btn sm danger">حذف</button></form></figcaption></figure>
+      {% endfor %}</div>
+      <form method="post" action="{% url 'project_add' 'image' %}" enctype="multipart/form-data" class="stack">{% csrf_token %}
+        {% include "university/_form.html" with form=image_form %}<button class="btn sm">رفع صورة</button>
+      </form>
+    </section>
+  </aside>
+  {% endif %}
+</div>
+{% endblock %}

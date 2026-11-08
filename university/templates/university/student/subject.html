@@ -1,0 +1,82 @@
+{% extends "university/base.html" %}
+{% block title %}{{ offering.subject.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ offering.subject.name }}</h1>
+    <p class="muted">{{ offering.teacher }} · {{ offering.academic_year }} · {{ offering.get_semester_display }}</p>
+  </div>
+  <a class="btn ghost" href="{% url 'dashboard' %}">رجوع</a>
+</div>
+
+<nav class="tabs">
+  <a href="?tab=theory" class="{% if tab == 'theory' %}on{% endif %}">النظري</a>
+  {% if offering.subject.has_practical %}<a href="?tab=practical" class="{% if tab == 'practical' %}on{% endif %}">العملي</a>{% endif %}
+  <a href="?tab=summaries" class="{% if tab == 'summaries' %}on{% endif %}">ملخصات الطلاب</a>
+</nav>
+
+{% if tab != "summaries" %}
+<section class="panel list">
+  {% for mat in materials %}
+    <div class="item">
+      <strong>{{ mat.title }}</strong>
+      {% if mat.description %}<span class="muted">{{ mat.description }}</span>{% endif %}
+      <div class="row small">
+        {% if mat.file %}<a href="{{ mat.file.url }}" target="_blank" rel="noopener">فتح الملف</a>{% endif %}
+        {% if mat.url %}<a href="{{ mat.url }}" target="_blank" rel="noopener">فتح الرابط</a>{% endif %}
+        <span class="muted">{{ mat.created_at|date:"Y-m-d" }}</span>
+      </div>
+    </div>
+  {% empty %}<p class="empty">الأستاذ ما رفع محتوى بهذي الخانة بعد.</p>{% endfor %}
+</section>
+
+{% else %}
+<div class="grid-2">
+  <section class="panel">
+    <div class="row spread">
+      <h2>الملخصات</h2>
+      <a class="btn accent" href="{% url 'summary_upload' offering.id %}">رفع ملخص</a>
+    </div>
+    <p class="small muted">ملخصات نفس المادة ونفس الأستاذ، من دفعتك والدفعات اللي قبلك. الموصى بيها من الأستاذ تطلع أول.</p>
+    <div class="list">
+    {% for s in summaries %}
+      <div class="item">
+        <div class="row spread">
+          <strong>{{ s.title }}</strong>
+          <span class="row">{% if s.is_recommended %}<span class="pill star">موصى به من الأستاذ</span>{% endif %}<span class="pill neutral">{{ s.get_kind_display }}</span></span>
+        </div>
+        {% if s.description %}<span class="muted">{{ s.description }}</span>{% endif %}
+        <div class="row small muted">
+          <span>{{ s.uploaded_by.user.full_name }} · دفعة {{ s.uploaded_by.batch_year }}</span>
+          {% if s.file %}<a href="{{ s.file.url }}" target="_blank" rel="noopener">فتح الملف</a>{% endif %}
+          {% if s.url %}<a href="{{ s.url }}" target="_blank" rel="noopener">{% if s.kind == "youtube" %}مشاهدة الفيديو{% else %}فتح الرابط{% endif %}</a>{% endif %}
+        </div>
+        <div class="row spread">
+          {% include "university/_stars.html" with avg=s.avg_stars count=s.ratings_count %}
+          {% if s.uploaded_by_id != student.id %}
+          <form method="post" action="{% url 'summary_rate' s.id %}" class="row">
+            {% csrf_token %}<input type="hidden" name="back" value="{{ request.get_full_path }}">
+            <span class="small muted">تقييمك:</span>
+            <span class="stars">{% for i in "12345" %}<button name="stars" value="{{ forloop.counter }}" aria-label="{{ forloop.counter }} نجوم" class="{% if s.my_rating and s.my_rating.0.stars >= forloop.counter %}on{% endif %}">★</button>{% endfor %}</span>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}<p class="empty">ماكو ملخصات منشورة بعد. كوني أول وحدة ترفع ملخص!</p>{% endfor %}
+    </div>
+  </section>
+  <aside class="panel">
+    <h2>ملخصاتي</h2>
+    <p class="small muted">الملخصات اللي بانتظار المراجعة أو المرفوضة.</p>
+    <div class="list">
+    {% for s in my_summaries %}
+      <div class="item">
+        <div class="row spread"><span>{{ s.title }}</span><span class="pill {{ s.status }}">{{ s.get_status_display }}</span></div>
+        {% if s.rejection_reason %}<span class="small" style="color:var(--bad)">السبب: {{ s.rejection_reason }}</span>{% endif %}
+      </div>
+    {% empty %}<p class="muted small">ماكو.</p>{% endfor %}
+    </div>
+  </aside>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,50 @@
+{% load static %}<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}بوابة الطالبة{% endblock %} | كلية الهندسة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Reem+Kufi:wght@500;700&display=swap">
+  <link rel="stylesheet" href="{% static 'university/style.css' %}">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="{% url 'home' %}">بوابة كلية الهندسة</a>
+    <nav class="nav">
+      {% if user.is_authenticated %}
+        {% if user.teacher_profile %}
+          <a href="{% url 'teacher_dashboard' %}">موادي</a>
+          <a href="{% url 'teacher_projects' %}">مشاريع التخرج</a>
+        {% elif user.student_profile %}
+          <a href="{% url 'dashboard' %}">الرئيسية</a>
+          {% if user.student_profile.is_final_year %}<a href="{% url 'project_edit' %}">مشروع التخرج</a>{% endif %}
+        {% endif %}
+        {% if user.is_staff %}<a href="{% url 'admin:index' %}">لوحة التحكم</a>{% endif %}
+        <a href="{% url 'notifications' %}">الإشعارات{% if unread_count %}<span class="badge-count">{{ unread_count }}</span>{% endif %}</a>
+        <form class="inline" method="post" action="{% url 'logout' %}">{% csrf_token %}<button>خروج</button></form>
+      {% else %}
+        <a href="{% url 'home' %}">الأسئلة الشائعة</a>
+        <a href="/chat">المساعدة الذكية</a>
+        <a href="{% url 'login' %}">تسجيل الدخول</a>
+        <a href="{% url 'register' %}">إنشاء حساب</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  {% if user.is_authenticated and not user.is_email_verified and user.student_profile %}
+    <div class="flash info row spread">
+      <span>ما تأكد إيميلك الجامعي بعد. افتحي الرابط اللي دزيناه على إيميلك.</span>
+      <form method="post" action="{% url 'resend_verification' %}">{% csrf_token %}<button class="btn sm ghost">إرسال الرابط مرة ثانية</button></form>
+    </div>
+  {% endif %}
+  {% for message in messages %}
+    <div class="flash {{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</main>
+{% block scripts %}{% endblock %}
+</body>
+</html>

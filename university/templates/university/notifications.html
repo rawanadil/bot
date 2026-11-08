@@ -1,0 +1,14 @@
+{% extends "university/base.html" %}
+{% block title %}الإشعارات{% endblock %}
+{% block content %}
+<h1>الإشعارات</h1>
+<section class="panel list">
+  {% for n in items %}
+    <div class="item">
+      <div class="row spread"><strong>{{ n.title }}</strong>{% if not n.is_read %}<span class="pill star">جديد</span>{% endif %}</div>
+      {% if n.message %}<span class="muted">{{ n.message }}</span>{% endif %}
+      <div class="row spread small muted"><span>{{ n.created_at|date:"Y-m-d H:i" }}</span>{% if n.link %}<a href="{{ n.link }}">افتح</a>{% endif %}</div>
+    </div>
+  {% empty %}<p class="empty">ماكو إشعارات.</p>{% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "university/base.html" %}
+{% block title %}إنشاء حساب{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>إنشاء حساب طالبة</h1>
+    <p class="muted">استخدمي إيميلك الجامعي. الصورة الحية تنحفظ حتى نتأكد من هويتك وقت تسجيل الحضور.</p>
+  </div>
+</div>
+<form method="post" class="grid-2" id="register-form">
+  {% csrf_token %}
+  <section class="panel stack">
+    {% if form.non_field_errors %}<div class="flash error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+    {% for field in form.visible_fields %}{% if field.name != "face_consent" %}
+      <div class="field">{{ field.label_tag }}{{ field }}{% for e in field.errors %}<span class="err">{{ e }}</span>{% endfor %}</div>
+    {% endif %}{% endfor %}
+  </section>
+  <section class="panel stack">
+    <h2>الصورة الحية</h2>
+    <p class="small muted">لازم تنلتقط هسه من الكاميرا (ما ينفع رفع صورة قديمة).</p>
+    <div class="camera">
+      <video id="cam" autoplay playsinline muted></video>
+      <img id="shot" alt="الصورة الملتقطة" hidden>
+      <canvas id="canvas" width="640" height="480" hidden></canvas>
+      <div class="row">
+        <button type="button" class="btn ghost" id="start-cam">تشغيل الكاميرا</button>
+        <button type="button" class="btn" id="take" disabled>التقاط الصورة</button>
+        <button type="button" class="btn ghost" id="retake" hidden>إعادة</button>
+      </div>
+      <span class="small muted" id="cam-status"></span>
+    </div>
+    {{ form.photo_data }}
+    {% for e in form.photo_data.errors %}<span class="err">{{ e }}</span>{% endfor %}
+    <div class="field check">{{ form.face_consent }}{{ form.face_consent.label_tag }}</div>
+    {% for e in form.face_consent.errors %}<span class="err">{{ e }}</span>{% endfor %}
+    <button class="btn accent">إنشاء الحساب</button>
+  </section>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const video = document.getElementById("cam");
+  const shot = document.getElementById("shot");
+  const canvas = document.getElementById("canvas");
+  const take = document.getElementById("take");
+  const retake = document.getElementById("retake");
+  const status = document.getElementById("cam-status");
+  const input = document.getElementById("id_photo_data");
+  let stream = null;
+
+  async function start() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+      video.srcObject = stream;
+      video.hidden = false; shot.hidden = true; retake.hidden = true;
+      take.disabled = false;
+      status.textContent = "خلي وجهك بنص الصورة وبإضاءة زينة.";
+    } catch (e) {
+      status.textContent = "ما گدرنا نشغل الكاميرا. اسمحي للموقع يستخدم الكاميرا وجربي مرة ثانية.";
+    }
+  }
+  document.getElementById("start-cam").addEventListener("click", start);
+  take.addEventListener("click", function () {
+    canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+    const data = canvas.toDataURL("image/jpeg", 0.85);
+    input.value = data;
+    shot.src = data; shot.hidden = false; video.hidden = true;
+    take.disabled = true; retake.hidden = false;
+    status.textContent = "انلتقطت الصورة.";
+    if (stream) stream.getTracks().forEach(t => t.stop());
+  });
+  retake.addEventListener("click", start);
+  if (input.value) { shot.src = input.value; shot.hidden = false; video.hidden = true; retake.hidden = false; }
+})();
+</script>
+{% endblock %}

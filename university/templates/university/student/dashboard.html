@@ -1,0 +1,57 @@
+{% extends "university/base.html" %}
+{% block title %}الرئيسية{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>أهلاً {{ student.user.full_name }}</h1>
+    <p class="muted">{{ student.department }} · {{ student.get_current_stage_display }} · دفعة {{ student.batch_year }}{% if year %} · السنة الدراسية {{ year }}{% endif %}</p>
+  </div>
+  {% if student.is_final_year %}<a class="btn accent" href="{% url 'project_edit' %}">مشروع التخرج</a>{% endif %}
+</div>
+
+{% if notifications %}
+<section class="panel">
+  <div class="row spread"><h2>إشعارات جديدة</h2><a class="small" href="{% url 'notifications' %}">كل الإشعارات</a></div>
+  <div class="list">{% for n in notifications %}<div class="item"><span><strong>{{ n.title }}</strong> <span class="muted">{{ n.message }}</span></span></div>{% endfor %}</div>
+</section>
+{% endif %}
+
+<section class="stack">
+  <h2>موادي</h2>
+  {% if cards %}
+  <div class="grid">
+    {% for c in cards %}
+      <a class="panel subject-card" href="{% url 'subject_detail' c.offering.id %}">
+        <span class="code">{{ c.offering.subject.code }}</span>
+        <h3>{{ c.offering.subject.name }}</h3>
+        <span class="small muted">{{ c.offering.teacher }} · {{ c.offering.get_semester_display }}</span>
+        {% with a=c.attendance %}
+          <div class="row spread small"><span>الحضور</span><span>{{ a.present }} من {{ a.sessions }} محاضرة</span></div>
+          <div class="meter"><span style="width:{% if a.sessions %}{% widthratio a.present a.sessions 100 %}{% else %}0{% endif %}%"></span></div>
+          {% if a.absent %}<span class="small" style="color:var(--bad)">غياب: {{ a.absent }}</span>{% endif %}
+        {% endwith %}
+        <span class="small muted">{{ c.grades|length }} درجة منشورة</span>
+      </a>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p class="empty">ما مسجلة بأي مادة بعد. المواد تنضاف تلقائياً من يحددها الأدمن لقسمك ومرحلتك.</p>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <h2>أنشطتي ودرجاتي</h2>
+  <p class="small muted">تظهر هنا بس الدرجات اللي الأستاذ سمح بإظهارها.</p>
+  {% for kind, items in activity.items %}
+    <h3 style="margin-top:14px">{{ kind }}</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>المادة</th><th>التقييم</th><th>التاريخ</th><th>الدرجة</th></tr></thead>
+      <tbody>{% for g in items %}
+        <tr><td>{{ g.assessment.offering.subject.name }}</td><td>{{ g.assessment.title }}</td><td>{{ g.assessment.date|default:"-" }}</td><td><strong>{{ g.score|floatformat:"-2u" }}</strong> / {{ g.assessment.max_score|floatformat:"-2u" }}</td></tr>
+      {% endfor %}</tbody>
+    </table></div>
+  {% empty %}
+    <p class="empty">ماكو درجات منشورة بعد.</p>
+  {% endfor %}
+</section>
+{% endblock %}

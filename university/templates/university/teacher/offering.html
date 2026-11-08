@@ -1,0 +1,112 @@
+{% extends "university/base.html" %}
+{% block title %}{{ offering.subject.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ offering.subject.name }}</h1><p class="muted">{{ offering.academic_year }} · {{ offering.get_semester_display }}</p></div>
+  <a class="btn ghost" href="{% url 'teacher_dashboard' %}">رجوع</a>
+</div>
+<nav class="tabs">
+  <a href="?tab=content" class="{% if tab == 'content' %}on{% endif %}">المحتوى (نظري/عملي)</a>
+  <a href="?tab=summaries" class="{% if tab == 'summaries' %}on{% endif %}">ملخصات الطلاب</a>
+  <a href="?tab=grades" class="{% if tab == 'grades' %}on{% endif %}">الدرجات</a>
+  <a href="?tab=attendance" class="{% if tab == 'attendance' %}on{% endif %}">الحضور</a>
+</nav>
+
+{% if tab == "content" %}
+<div class="grid-2">
+  <section class="panel list">
+    {% for mat in materials %}
+      <div class="item">
+        <div class="row spread"><strong>{{ mat.title }}</strong><span class="pill neutral">{{ mat.get_section_display }}</span></div>
+        <div class="row small">
+          {% if mat.file %}<a href="{{ mat.file.url }}" target="_blank" rel="noopener">الملف</a>{% endif %}
+          {% if mat.url %}<a href="{{ mat.url }}" target="_blank" rel="noopener">الرابط</a>{% endif %}
+          <form method="post" action="{% url 'teacher_material_delete' mat.id %}">{% csrf_token %}<button class="btn sm danger">حذف</button></form>
+        </div>
+      </div>
+    {% empty %}<p class="empty">ما رفعت محتوى بعد.</p>{% endfor %}
+  </section>
+  <section class="panel">
+    <h2>إضافة محتوى</h2>
+    <form method="post" action="{% url 'teacher_material_add' offering.id %}" enctype="multipart/form-data" class="stack">
+      {% csrf_token %}{% include "university/_form.html" %}<button class="btn">إضافة</button>
+    </form>
+  </section>
+</div>
+
+{% elif tab == "summaries" %}
+<section class="panel">
+  <h2>بانتظار المراجعة</h2>
+  <div class="list">
+  {% for s in pending %}
+    <div class="item">
+      <div class="row spread"><strong>{{ s.title }}</strong><span class="pill neutral">{{ s.get_kind_display }}</span></div>
+      {% if s.description %}<span class="muted">{{ s.description }}</span>{% endif %}
+      <div class="row small muted"><span>{{ s.uploaded_by.user.full_name }} · {{ s.created_at|date:"Y-m-d" }}</span>
+        {% if s.file %}<a href="{{ s.file.url }}" target="_blank" rel="noopener">فتح الملف</a>{% endif %}
+        {% if s.url %}<a href="{{ s.url }}" target="_blank" rel="noopener">فتح الرابط</a>{% endif %}</div>
+      <div class="row">
+        <form method="post" action="{% url 'teacher_summary_review' s.id 'approve' %}">{% csrf_token %}<button class="btn sm">موافقة ونشر</button></form>
+        <form method="post" action="{% url 'teacher_summary_review' s.id 'reject' %}" class="row" style="flex:1">{% csrf_token %}
+          <input name="reason" placeholder="سبب الرفض" required style="flex:1;width:auto"><button class="btn sm danger">رفض</button></form>
+      </div>
+    </div>
+  {% empty %}<p class="empty">ماكو ملخصات جديدة.</p>{% endfor %}
+  </div>
+</section>
+<section class="panel">
+  <h2>المنشورة</h2>
+  <div class="list">
+  {% for s in approved %}
+    <div class="item row spread">
+      <span><strong>{{ s.title }}</strong> <span class="small muted">{{ s.uploaded_by.user.full_name }}</span>
+        {% include "university/_stars.html" with avg=s.avg_stars count=s.ratings_count %}</span>
+      <form method="post" action="{% url 'teacher_summary_review' s.id 'recommend' %}">{% csrf_token %}
+        <button class="btn sm {% if s.is_recommended %}accent{% else %}ghost{% endif %}">{% if s.is_recommended %}موصى به ✓{% else %}تحديد كموصى به{% endif %}</button></form>
+    </div>
+  {% empty %}<p class="muted">ماكو.</p>{% endfor %}
+  </div>
+</section>
+{% if rejected %}<section class="panel"><h3>المرفوضة</h3><div class="list">{% for s in rejected %}<div class="item small"><span>{{ s.title }} <span class="muted">({{ s.rejection_reason }})</span></span></div>{% endfor %}</div></section>{% endif %}
+
+{% elif tab == "grades" %}
+<div class="grid-2">
+  <section class="panel">
+    <h2>التقييمات</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>العنوان</th><th>النوع</th><th>من</th><th>الدرجات</th><th>للطلاب</th><th></th></tr></thead>
+      <tbody>{% for a in assessments %}
+        <tr>
+          <td><a href="{% url 'teacher_assessment' a.id %}">{{ a.title }}</a></td>
+          <td>{{ a.get_kind_display }}</td><td>{{ a.max_score|floatformat:"-2u" }}</td><td>{{ a.n }}</td>
+          <td><span class="pill {% if a.is_published %}on{% else %}off{% endif %}">{% if a.is_published %}ظاهرة{% else %}مخفية{% endif %}</span></td>
+          <td><form method="post" action="{% url 'teacher_assessment_toggle' a.id %}">{% csrf_token %}<input type="hidden" name="back" value="{{ request.get_full_path }}"><button class="btn sm ghost">{% if a.is_published %}إخفاء{% else %}إظهار{% endif %}</button></form></td>
+        </tr>
+      {% empty %}<tr><td colspan="6" class="muted">ماكو تقييمات بعد.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+  <section class="panel">
+    <h2>تقييم جديد</h2>
+    <form method="post" action="{% url 'teacher_assessment_add' offering.id %}" class="stack">{% csrf_token %}{% include "university/_form.html" %}<button class="btn">إضافة</button></form>
+  </section>
+</div>
+
+{% elif tab == "attendance" %}
+<div class="grid-2">
+  <section class="panel">
+    <h2>المحاضرات</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>التاريخ</th><th>الوقت</th><th>النوع</th><th>الحضور</th><th>ملف Excel</th></tr></thead>
+      <tbody>{% for s in sessions %}
+        <tr><td><a href="{% url 'teacher_session' s.id %}">{{ s.date|date:"Y-m-d" }}</a></td><td>{{ s.start_time|time:"H:i" }}</td><td>{{ s.get_section_display }}</td>
+          <td>{{ s.present }} / {{ enrolled }}</td><td>{% if s.report_sent_at %}<span class="pill on">انرسل</span>{% else %}-{% endif %}</td></tr>
+      {% empty %}<tr><td colspan="5" class="muted">ماكو محاضرات بعد.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+  <section class="panel">
+    <h2>محاضرة جديدة</h2>
+    <form method="post" action="{% url 'teacher_session_add' offering.id %}" class="stack">{% csrf_token %}{% include "university/_form.html" %}<button class="btn">إضافة</button></form>
+  </section>
+</div>
+{% endif %}
+{% endblock %}

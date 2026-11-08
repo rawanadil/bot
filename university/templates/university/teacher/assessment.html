@@ -1,0 +1,39 @@
+{% extends "university/base.html" %}
+{% block title %}{{ a.title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ a.title }}</h1><p class="muted">{{ a.offering.subject.name }} · {{ a.get_kind_display }} · من {{ a.max_score|floatformat:"-2u" }}</p></div>
+  <div class="row">
+    <span class="pill {% if a.is_published %}on{% else %}off{% endif %}">{% if a.is_published %}الدرجات ظاهرة للطلاب{% else %}الدرجات مخفية عن الطلاب{% endif %}</span>
+    <form method="post" action="{% url 'teacher_assessment_toggle' a.id %}">{% csrf_token %}<button class="btn {% if a.is_published %}ghost{% else %}accent{% endif %}">{% if a.is_published %}إخفاء{% else %}إظهار للطلاب{% endif %}</button></form>
+    <a class="btn ghost" href="{% url 'teacher_offering' a.offering_id %}?tab=grades">رجوع</a>
+  </div>
+</div>
+<div class="grid-2">
+  <section class="panel">
+    <h2>الدرجات</h2>
+    <form method="post" class="stack">{% csrf_token %}
+      <div class="table-wrap"><table>
+        <thead><tr><th>رقم الطالب</th><th>الاسم</th><th>الدرجة</th></tr></thead>
+        <tbody>{% for r in rows %}
+          <tr><td>{{ r.student.student_number }}</td><td>{{ r.student.user.full_name }}</td>
+            <td><input type="number" step="0.01" min="0" max="{{ a.max_score|floatformat:"-2u" }}" id="score_{{ r.student.id }}" name="score_{{ r.student.id }}" value="{% if r.grade %}{{ r.grade.score|floatformat:'-2u' }}{% endif %}"></td></tr>
+        {% empty %}<tr><td colspan="3" class="muted">ماكو طلاب مسجلين.</td></tr>{% endfor %}</tbody>
+      </table></div>
+      {% if rows %}<button class="btn">حفظ الدرجات</button>{% endif %}
+    </form>
+  </section>
+  <aside class="stack">
+    <section class="panel stack">
+      <h2>استيراد من Excel</h2>
+      <p class="small muted">أول سطر بالملف: <code>student_number</code> و <code>score</code> و (اختياري) <code>notes</code>.</p>
+      <a class="btn ghost sm" href="{% url 'teacher_assessment_template' a.id %}">تنزيل ملف جاهز بأسماء الطلاب</a>
+      <form method="post" action="{% url 'teacher_assessment_import' a.id %}" enctype="multipart/form-data" class="stack">{% csrf_token %}
+        {% include "university/_form.html" with form=upload_form %}<button class="btn">رفع وقراءة</button></form>
+    </section>
+    {% if imports %}<section class="panel"><h3>آخر الملفات</h3><div class="list">{% for i in imports %}
+      <div class="item small"><span>{{ i.created_at|date:"Y-m-d H:i" }}: نجح {{ i.rows_ok }} · فشل {{ i.rows_failed }}</span>{% if i.error_log %}<span class="muted" style="white-space:pre-line">{{ i.error_log }}</span>{% endif %}</div>
+    {% endfor %}</div></section>{% endif %}
+  </aside>
+</div>
+{% endblock %}

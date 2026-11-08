@@ -1,0 +1,23 @@
+{% extends "university/base.html" %}
+{% block title %}موادي{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>أهلاً {{ user.full_name }}</h1><p class="muted">المواد اللي تدرسها</p></div>
+  {% if projects_pending %}<a class="btn accent" href="{% url 'teacher_projects' %}">{{ projects_pending }} مشروع تخرج بانتظار المراجعة</a>{% endif %}
+</div>
+{% if notifications %}
+<section class="panel"><h2>إشعارات جديدة</h2>
+  <div class="list">{% for n in notifications %}<div class="item"><span><strong>{{ n.title }}</strong> <span class="muted">{{ n.message }}</span>{% if n.link %} <a href="{{ n.link }}">افتح</a>{% endif %}</span></div>{% endfor %}</div>
+</section>
+{% endif %}
+<div class="grid">
+  {% for o in offerings %}
+    <a class="panel subject-card" href="{% url 'teacher_offering' o.id %}">
+      <span class="code">{{ o.subject.code }}</span>
+      <h3>{{ o.subject.name }}</h3>
+      <span class="small muted">{{ o.academic_year }} · {{ o.get_semester_display }} · {{ o.subject.get_stage_display }}</span>
+      <div class="row small"><span>{{ o.students }} طالب</span>{% if o.pending %}<span class="pill pending">{{ o.pending }} ملخص بانتظار المراجعة</span>{% endif %}</div>
+    </a>
+  {% empty %}<p class="empty">ماكو مواد مربوطة بيك. الأدمن يضيفها من لوحة التحكم.</p>{% endfor %}
+</div>
+{% endblock %}
