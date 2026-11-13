@@ -3,3 +3,6 @@ psycopg[binary]>=3.1
 pgvector>=0.3
 pillow
 openpyxl
+# متجهات أسئلة الشات بوت (embed_faqs). لتنصيب torch أصغر بدون GPU:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+sentence-transformers>=3
