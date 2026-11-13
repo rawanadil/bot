@@ -17,7 +17,12 @@ Django يحوّلها لجداول SQL عن طريق: python manage.py migrate
 (الـ ESP32 والحساسات مرحلة ثانية، ما مضافة هنا)
 """
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import ArrayField  # noqa: F401  (مستخدم بالمايغريشن القديمة)
+from pgvector.django import HnswIndex, VectorField
+
+# أبعاد المتجهات (لازم تطابق الموديل اللي يطلعها)
+FACE_DIM = 128   # face_recognition / dlib
+TEXT_DIM = 768   # intfloat/multilingual-e5-base
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -138,12 +143,18 @@ class StudentProfile(models.Model):
     live_photo_taken_at = models.DateTimeField("وقت التقاط الصورة", blank=True, null=True)
     # بصمة الوجه: أرقام تطلعها مكتبة التعرف على الوجه (مثل face_recognition = 128 رقم)
     # نقارن بيها وقت الحضور بدل ما نقارن الصور نفسها
-    face_embedding = ArrayField(models.FloatField(), blank=True, null=True, verbose_name="بصمة الوجه")
+    # نخزنها بنوع vector مال pgvector حتى نكدر نبحث بالداتابيس عن أقرب وجه بسرعة
+    face_embedding = VectorField(dimensions=FACE_DIM, blank=True, null=True, verbose_name="بصمة الوجه")
     face_consent = models.BooleanField("موافقة على استخدام صورة الوجه", default=False)
 
     class Meta:
         verbose_name = "طالب"
         verbose_name_plural = "الطلاب"
+        indexes = [
+            # face_recognition يقارن بالمسافة الإقليدية (L2)
+            HnswIndex(name="student_face_hnsw", fields=["face_embedding"],
+                      m=16, ef_construction=64, opclasses=["vector_l2_ops"]),
+        ]
 
     def __str__(self):
         return f"{self.user.full_name} ({self.student_number})"
@@ -619,10 +630,16 @@ class FAQ(models.Model):
     answer = models.TextField("الجواب")
     intent = models.CharField("التصنيف (Intent)", max_length=100, blank=True)
     is_active = models.BooleanField("فعّال", default=True)
+    # متجه معنى السؤال (pgvector) للبحث الدلالي. ينحسب بالأمر: python manage.py embed_faqs
+    embedding = VectorField(dimensions=TEXT_DIM, blank=True, null=True, editable=False)
 
     class Meta:
         verbose_name = "سؤال شائع"
         verbose_name_plural = "أسئلة الشات بوت"
+        indexes = [
+            HnswIndex(name="faq_embedding_hnsw", fields=["embedding"],
+                      m=16, ef_construction=64, opclasses=["vector_cosine_ops"]),
+        ]
 
     def __str__(self):
         return self.question[:60]

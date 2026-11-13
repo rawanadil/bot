@@ -26,6 +26,8 @@ rem ---- 3) إنشاء الداتابيس (مرة وحدة) ----
 set /p PGPASSWORD=اكتبي كلمة سر المستخدم postgres (اللي حطيتيها وقت تنصيب PostgreSQL): 
 "%PSQL%" -U postgres -h localhost -tAc "SELECT 1 FROM pg_roles WHERE rolname='bot_user'" | find "1" >nul || "%PSQL%" -U postgres -h localhost -c "CREATE USER bot_user WITH PASSWORD 'bot_pass' CREATEDB;"
 "%PSQL%" -U postgres -h localhost -tAc "SELECT 1 FROM pg_database WHERE datname='bot_db'" | find "1" >nul || "%PSQL%" -U postgres -h localhost -c "CREATE DATABASE bot_db OWNER bot_user;"
+rem تفعيل pgvector (لازم superuser). إذا فشل: نصبي pgvector من github.com/pgvector/pgvector
+"%PSQL%" -U postgres -h localhost -d bot_db -c "CREATE EXTENSION IF NOT EXISTS vector;"
 if errorlevel 1 (
   echo [خطأ] ما گدرنا نسوي الداتابيس. تأكدي من كلمة السر وإن PostgreSQL شغال
   pause & exit /b 1

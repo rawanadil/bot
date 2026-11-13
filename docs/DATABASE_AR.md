@@ -171,6 +171,8 @@ pip install -r requirements.txt
 ```
 CREATE USER bot_user WITH PASSWORD 'bot_pass';
 CREATE DATABASE bot_db OWNER bot_user;
+\c bot_db
+CREATE EXTENSION IF NOT EXISTS vector;   -- pgvector (يحتاج superuser مرة وحدة)
 ```
 
 بعدين:
@@ -178,6 +180,7 @@ CREATE DATABASE bot_db OWNER bot_user;
 ```
 python manage.py migrate                 # يسوي الجداول
 python manage.py load_initial_data       # ينقل الأقسام وأسئلة الشات بوت
+python manage.py embed_faqs              # متجهات أسئلة الشات بوت (pgvector، يحتاج sentence-transformers)
 python manage.py createsuperuser         # يسوي حساب أدمن
 python manage.py runserver
 ```
@@ -186,3 +189,28 @@ python manage.py runserver
 
 إذا اسم الداتابيس أو كلمة السر مختلفة، تكدرين تغيرينها بمتغيرات البيئة:
 `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`.
+
+---
+
+## البحث بالمتجهات (pgvector)
+
+pgvector إضافة لـ PostgreSQL تخلي الداتابيس تخزن متجهات (قوائم أرقام) وتلگى أقربها بسرعة.
+
+| الجدول | الحقل | الأبعاد | المسافة | الاستخدام |
+|---|---|---|---|---|
+| `university_faq` | `embedding` | 768 | cosine | الشات بوت يلگى أقرب سؤال بالمعنى |
+| `university_studentprofile` | `face_embedding` | 128 | L2 (إقليدية) | مطابقة الوجه وقت الحضور |
+
+- كل حقل عليه فهرس **HNSW** حتى البحث يبقى سريع حتى لو كثرت البيانات.
+- الكود بـ `university/vector_search.py`: `search_faqs(...)` و `find_face_match(...)`.
+- `boot2.py` يستخدم pgvector تلقائياً إذا الأسئلة عندها متجهات، وإلا يرجع للبحث القديم بالذاكرة.
+- إذا عدلتي سؤال من لوحة الأدمن، متجهه ينحسب من جديد تلقائياً.
+- إذا غيرتي موديل النصوص: `python manage.py embed_faqs --all`
+
+مثال:
+
+```python
+from university.vector_search import search_faqs
+for faq in search_faqs("شكد القسط؟", k=5):
+    print(round(faq.distance, 3), faq.question)
+```

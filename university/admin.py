@@ -179,6 +179,17 @@ class FAQAdmin(admin.ModelAdmin):
     list_filter = ["intent", "is_active"]
     search_fields = ["question", "answer"]
 
+    def save_model(self, request, obj, form, change):
+        # إذا تغير السؤال، نحسب متجهه من جديد (pgvector)
+        if "question" in form.changed_data:
+            try:
+                from university.vector_search import embed_passages
+
+                obj.embedding = embed_passages([obj.question])[0]
+            except ImportError:  # sentence-transformers مو منصبة: نحسبه بعدين بـ embed_faqs
+                obj.embedding = None
+        super().save_model(request, obj, form, change)
+
 
 @admin.register(m.ChatLog)
 class ChatLogAdmin(admin.ModelAdmin):

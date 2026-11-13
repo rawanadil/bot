@@ -111,10 +111,44 @@ def clean_text(text):
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 df_training = pd.read_csv(os.path.join(BASE_DIR, 'qustion.csv'), encoding='utf-8-sig')
 df_departments = pd.read_csv(os.path.join(BASE_DIR, 'departments_utf8_bom.csv'), encoding='utf-8-sig')
-question_embeddings = embedding_model.encode(
-    ["passage: " + q for q in df_training['Question'].tolist()],
-    convert_to_numpy=True
-)
+# متجهات الأسئلة بالذاكرة: بس احتياط إذا pgvector مو جاهز (تنحسب أول مرة نحتاجها)
+_question_embeddings = None
+
+
+def get_question_embeddings():
+    global _question_embeddings
+    if _question_embeddings is None:
+        _question_embeddings = embedding_model.encode(
+            ["passage: " + q for q in df_training['Question'].tolist()],
+            convert_to_numpy=True
+        )
+    return _question_embeddings
+
+
+def top_candidates(user_input, k=20):
+    """
+    المرحلة الأولى: أقرب k أسئلة بالمعنى.
+    إذا الشات بوت شغال داخل Django والأسئلة عندها متجهات بالداتابيس → نبحث بـ pgvector.
+    غير هيچ → نرجع للبحث القديم بالذاكرة (cosine similarity).
+    """
+    try:
+        from university.vector_search import faqs_are_indexed, search_faqs
+
+        if faqs_are_indexed():
+            vector = embedding_model.encode(
+                "query: " + user_input, normalize_embeddings=True, convert_to_numpy=True
+            ).tolist()
+            return [{"answer": f.answer, "question": f.question} for f in search_faqs(vector, k)]
+    except Exception as e:  # Django مو مشتغل، أو pgvector مو مفعّل
+        print(f"pgvector غير متاح، نستخدم البحث بالذاكرة: {e}")
+
+    user_embedding = embedding_model.encode([user_input], convert_to_numpy=True)
+    cos_similarities = cosine_similarity(user_embedding, get_question_embeddings())[0]
+    top_k_indices = np.argsort(cos_similarities)[-k:][::-1]
+    return [
+        {"answer": df_training.iloc[idx]['Answer'], "question": df_training.iloc[idx]['Question']}
+        for idx in top_k_indices
+    ]
 df_training['Clean_Question'] = df_training['Question'].apply(clean_text)
 
 # ----------------------------
@@ -309,10 +343,8 @@ def chatbot_response(user_input, state):
     # 🧠 نظام روان الهجين المطور: أولوية النص + ذكاء التحليل
     # ========================================================
 
-    # 1. المرحلة الأولى: Cosine Similarity (جلب أفضل 20 مرشح)
-    user_embedding = embedding_model.encode([user_input], convert_to_numpy=True)
-    cos_similarities = cosine_similarity(user_embedding, question_embeddings)[0]
-    top_k_indices = np.argsort(cos_similarities)[-20:][::-1]
+    # 1. المرحلة الأولى: البحث الدلالي (pgvector) لجلب أفضل 20 مرشح
+    candidates = top_candidates(user_input, k=20)
     exclude_rules = {
         "الزي الموحد": ["زي", "لبس", "الوان", "تنورة", "قميص", "ملابس", "مظهر", "حجاب"],
         "يجيب مستمسكاته": ["تسجيل", "مستمسك", "تقديم", "ملف", "كفيل", "هوية", "جلب"],
@@ -324,12 +356,6 @@ def chatbot_response(user_input, state):
         "خطوط نقل": ["باص", "نقل", "توصيل", "خط", "خطوط", "سواق"]
     }
 
-    candidates = []
-    for idx in top_k_indices:
-        candidates.append({
-            "answer": df_training.iloc[idx]['Answer'],
-            "question": df_training.iloc[idx]['Question']
-        })
 
     # 2. المرحلة الثانية: Cross-Encoder (التحليل المنطقي)
     pairs = [[user_input, f"سؤال: {c['question']} إجابة: {c['answer']}"] for c in candidates]
